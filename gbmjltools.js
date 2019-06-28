@@ -17,6 +17,11 @@
 //Definir el placeholder a mostrar en un input.
 //EX.  app.getSharedData().InputPlaceHolder(page.F_NumUnico,"########-#");
  app.getSharedData().InputPlaceHolder=function(myInput,placeHolder) {
+	 debugger;
+	 if (!placeHolder){
+		 placeHolder="placeHolder";
+	 }
+
 	myInput.setPlaceholderText(placeHolder);//define patron recibido, Ex "####-##"
  }
 
@@ -52,13 +57,49 @@
 		}
  }
 
+ //Calcular la edad partiendo de la fecha de nacimiento.
+ // Ex. BO.F_Number.setValue(app.getSharedData().CalcularEdad(BOA.getValue(), true));
+ app.getSharedData().CalcularEdad = function(birthDay) {
+   //31557600000 is 24 * 3600 * 365.25 * 1000 es un año, un año 365 days y 6 horas, lo cual es  0.25 de dia.
+   // doble tilde convierte float a integer
+   return ~~((Date.now() - birthDay) / (31557600000));
+ }
+
+ //Buscar texto dentro de las opciones del dropdown y retorna su posición
+ //app.getSharedData().BuscarOpcionDropDown(listaOpciones,"texto a buscar");
+ app.getSharedData().BuscarOpcionDropDown = function(lstDropDown,searchValue){
+
+ 	//var lstDropDown=myDropDown.getOptions();
+ 	var currentPos=0;
+ 	var defaultPos=-1;
+	if (!searchValue){
+		searchValue="Nothing";
+	}else {
+		searchValue=searchValue.trim();
+	}
+
+	if (lstDropDown.getType()==="comboBox"){
+			for (var key in lstDropDown) {
+			    if (lstDropDown.hasOwnProperty(key)) {
+			        var valor = get(lstDropDown,key); //get es un metodo que usa Forms. Syntax: get(obj,prop)
+			        if (valor.toLowerCase().trim()===searchValue) {
+			        	defaultPos=currentPos;
+			        }
+			    }
+			    currentPos++;
+			}
+	}else {
+		alert("app.getSharedData().BuscarOpcionDropDown esperaba recibir un elemento tipo Lista Desplegable...");
+	}
+
+		return defaultPos;
+ }
 
 
 
 //app.getSharedData().ValidarPatron(page.F_TxtFamiliaTelefono,"####-####",0);
 //validaOnBlur opcional 0 o 1
  app.getSharedData().ValidarPatron = function(theItem, pattern,validaOnBlur) {
-
  	if(!pattern){
  		var pattern="####-####"; //valor default si no se envia
  	}
@@ -72,9 +113,8 @@
 		var longPatron=pattern.length;
 
 	try {
-
 		var arrayPattern=pattern.split(''); //convertimos pattern a array
-	    var numArray = valorItem.match(/(\d)|(-)/g); //obteniendo numeros y guiones, guardando en arreglo
+	  var numArray = valorItem.match(/(\d)|(-)/g); //obteniendo numeros y guiones, guardando en arreglo
 	    //var numArrayString=numArray.toString().replace(/,/g,''); //numeros y guines en formato string da error en Forms
 	    //var nuevoNumArray= numArray;
 	 	var valorEnmascarado="";
@@ -246,14 +286,7 @@ app.getSharedData().ValidarFechaMayor= function(miFecha, fechaMaxima, errorMsg) 
 	}
 }
 
-//Calcula la edad partiendo de la fecha de nacimiento.
-// Ex. BO.F_Number.setValue(app.getSharedData().CalcularEdad(BOA.getValue(), true));
-app.getSharedData().CalcularEdad = function(birthDay) {
-  //31557600000 is 24 * 3600 * 365.25 * 1000 es un año, un año 365 days y 6 horas, lo cual es  0.25 de dia.
-  // doble tilde convierte float a integer
-  return ~~((Date.now() - birthDay) / (31557600000));
 
-}
 
 //Habilita un objeto destino en base a un valor del objeto causante
 //Ex.  app.getSharedData().HabilitarItemCausaEfecto(optionObject,"Si",txtObject);
@@ -269,27 +302,6 @@ app.getSharedData().CalcularEdad = function(birthDay) {
 		  itemDestino.setActive(false);
 	}
 
- }
-
- //busca texto dentro de las opciones del dropdown y retorna su posición
- //app.getSharedData().BuscarOpcionDropDown(listaOpciones,"texto a buscar");
- app.getSharedData().BuscarOpcionDropDown = function(lstDropDown,searchValue) {
- 	//var lstDropDown=myDropDown.getOptions();
- 	var currentPos=0;
- 	var defaultPos=-1;
-
-		for (var key in lstDropDown) {
-		    if (lstDropDown.hasOwnProperty(key)) {
-		        var valor = get(lstDropDown,key); //get es un metodo que usa Forms. Syntax: get(obj,prop)
-
-		        if (valor===searchValue.trim()) {
-		        	defaultPos=currentPos;
-		        }
-		    }
-		    currentPos++;
-		}
-
-		return defaultPos;
  }
 
 //Validar que un input acepte solo números (enteros/flotantes)
