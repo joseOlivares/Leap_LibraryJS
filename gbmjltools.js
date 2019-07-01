@@ -207,18 +207,23 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
 	switch (dep) {
 		case "Ahuachapán":
 			munDepartamento=ahuachapan;
+			defaultCabecera=0;
 			break;
 		case "Cabañas":
 			munDepartamento=cabanas;
+			defaultCabecera=6;
 			break;
 		case "Chalatenango":
 			munDepartamento=chalatenango;
+			defaultCabecera=3;
 			break;
 		case "Cuscatlán":
 			munDepartamento=cuscatlan;
+			defaultCabecera=1;
 			break;
 		case "Morazán":
 			munDepartamento=morazan;
+			defaultCabecera=18;
 			break;
 		case "La Libertad":
 			munDepartamento=lalibertad;
@@ -226,6 +231,7 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
 			break;
 		case "La Paz":
 			munDepartamento=lapaz;
+			defaultCabecera=21;
 			break;
 		case "La Unión":
 			munDepartamento=launion;
@@ -245,6 +251,7 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
 			break;
 		case "Sonsonate":
 			munDepartamento=sonsonate;
+			defaultCabecera=0;
 			break;
 		case "Usulután":
 			munDepartamento=usulutan;
