@@ -17,7 +17,6 @@
 //Definir el placeholder a mostrar en un input.
 //EX.  app.getSharedData().InputPlaceHolder(page.F_NumUnico,"########-#");
  app.getSharedData().InputPlaceHolder=function(myInput,placeHolder) {
-	 debugger;
 	 if (!placeHolder){
 		 placeHolder="placeHolder";
 	 }
@@ -68,22 +67,22 @@
  //Buscar texto dentro de las opciones del dropdown y retorna su posición
  //app.getSharedData().BuscarOpcionDropDown(listaOpciones,"texto a buscar");
  app.getSharedData().BuscarOpcionDropDown = function(lstDropDown,searchValue){
-
- 	//var lstDropDown=myDropDown.getOptions();
- 	var currentPos=0;
- 	var defaultPos=-1;
 	if (!searchValue){
 		searchValue="Nothing";
 	}else {
-		searchValue=searchValue.trim();
+		searchValue=searchValue.toString().trim();
 	}
+	var currentPos=0;
+ 	var optionPosition=-1;
 
 	if (lstDropDown.getType()==="comboBox"){
-			for (var key in lstDropDown) {
-			    if (lstDropDown.hasOwnProperty(key)) {
-			        var valor = get(lstDropDown,key); //get es un metodo que usa Forms. Syntax: get(obj,prop)
-			        if (valor.toLowerCase().trim()===searchValue) {
-			        	defaultPos=currentPos;
+		 	var opciones =lstDropDown.getOptions();
+			for (var key in opciones) {
+			    if (opciones.hasOwnProperty(key)) {
+			        var valor = get(opciones,key); //get es un metodo que usa Forms. Syntax: get(obj,prop)
+																						//retorna un objeto, esye caso con title y value como propiedades
+			        if (valor.title.trim()===searchValue) {
+			        	optionPosition=currentPos;
 			        }
 			    }
 			    currentPos++;
@@ -92,7 +91,7 @@
 		alert("app.getSharedData().BuscarOpcionDropDown esperaba recibir un elemento tipo Lista Desplegable...");
 	}
 
-		return defaultPos;
+		return optionPosition;
  }
 
 
@@ -158,30 +157,35 @@
 }
 
 
-//Ex. app.getSharedData().ListadoDepartamentos("San Miguel");
+//Ex. app.getSharedData().ListadoDepartamentos(dropDown,"San Miguel");
 app.getSharedData().ListadoDepartamentos = function(dropDownDestino, defaultDepto) {
 	var listaDeptos=["Ahuachapán","Cabañas","Chalatenango","Cuscatlán","Morazán","La Libertad","La Paz","La Unión","San Miguel", "San Salvador","San Vicente","Santa Ana", "Sonsonate", "Usulután"];
 	var deptos=new Array();
 	var defaultDeptoPos=9;
 
+	if (!defaultDepto){
+		defaultDepto="San Salvador";
+	}else {
+		defaultDepto=defaultDepto.toString().trim();
+	}
+
 	dropDownDestino.setValue('');//limpiando opciones
 
 	for (var i = 0; i < listaDeptos.length; i++) {
 		deptos.push({title: get(listaDeptos,i),value:get(listaDeptos,i)});	//usando get()  solo para IBM Forms
-
-			if (get(listaDeptos,i)===defaultDepto.toString().trim()) {
-		        	defaultDeptoPos=i;
-		        }
-
+			if (get(listaDeptos,i)===defaultDepto) {
+		     defaultDeptoPos=i;
+		  }
 	}
 
 	dropDownDestino.setOptions(deptos);//
 	dropDownDestino.setValue(get(deptos, defaultDeptoPos).value);//definimos el valor por deafult a mostrar, 9 es San Salvador
 }
 
+
 //Carga un Drop Down List con los  municipios pertenecientes al departamento seleccionado.
 //Ex. app.getSharedData().MostrarMunicipios("San Miguel", DropdownDestino);
-app.getSharedData().MostrarMunicipios = function(depSeleccionado,myOption) {
+app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino) {
 	var ahuachapan=["Ahuachapán","Apaneca","Atiquizaya","Concepción de Ataco","El Refugio","Guaymango","Jujutla","San Francisco Menéndez","San Lorenzo","San Pedro Puxtla","Tacuba","Turín"];
 	var cabanas=["Cinquera","Dolores (Villa Doleres)","Guacotecti","Ilobasco","Jutiapa","San Isidro","Sensuntepeque","Tejutepeque","Victoria"];
 	var chalatenango=["Agua Caliente","Arcatao","Azacualpa","Chalatenango","Citalá","Comalapa","Concepción Quezaltepeque","Dulce Nombre de María","El Carrizal","El Paraíso","La Laguna","La Palma","La Reina","Las Vueltas","Nombre de Jesús","Nueva Concepción","Nueva Trinidad","Ojos de Agua","Potonico","San Antonio de la Cruz","San Antonio Los Ranchos","San Fernando","San Francisco Lempa","San Francisco Morazán","San Ignacio","San Isidro Labrador","San José Cancasque (Cancasque)","San José Las Flores","San Luis del Carmen","San Miguel de Mercedes","San Rafael","Santa Rita","Tejutla"];
@@ -196,11 +200,10 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,myOption) {
 	var santaana=["Candelaria de la Frontera","Chalchuapa","Coatepeque","El Congo","El Porvenir","Masahuat","Metapán","San Antonio Pajonal","San Sebastián Salitrillo","Santa Ana","Santa Rosa Guachipilín","Santiago de la Frontera","Texistepeque"];
 	var sonsonate=["Acajutla","Armenia","Caluco","Cuisnahuat","Izalco","Juayúa","Nahuizalco","Nahulingo","Salcoatitán","San Antonio del Monte","San Julián","Santa Catarina Masahuat","Santa Isabel Ishuatán","Santo Domingo de Guzmán","Sonsonate","Sonzacate"];
 	var usulutan=["Alegría","Berlín","California","Concepción Batres","El Triunfo","Ereguayquín","Estanzuelas","Jiquilisco","Jucuapa","Jucuarán","Mercedes Umaña","Nueva Granada","Ozatlán","Puerto El Triunfo","San Agustín","San Buenaventura","San Dionisio","San Francisco Javier","Santa Elena","Santa María","Santiago de María","Tecapán","Usulután"];
-
 	var dep=depSeleccionado.toString().trim();
 	var munDepartamento=sansalvador;//por default
 	var defaultCabecera=0;
-	myOption.setActive(true);//habilitando el option
+	dropDownDestino.setActive(true);//habilitando el option
 	switch (dep) {
 		case "Ahuachapán":
 			munDepartamento=ahuachapan;
@@ -253,7 +256,7 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,myOption) {
 			break;
 	}
 
-	myOption.setValue('');//limpiando opciones
+	dropDownDestino.setValue('');//limpiando opciones
 	var options= new Array();
 
 	for (var i = 0; i < munDepartamento.length; i++) {
@@ -261,9 +264,8 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,myOption) {
 		options.push({title: get(munDepartamento,i),value:get(munDepartamento,i)});	//usando get()  solo para IBM Forms
 	}
 
-	myOption.setOptions(options);//cargamos los municipios acorde al departamento seleccionado
-	myOption.setValue(get(options, defaultCabecera).value);//definimos el valor por deafult a mostrar,
-
+	dropDownDestino.setOptions(options);//cargamos los municipios acorde al departamento seleccionado
+	dropDownDestino.setValue(get(options, defaultCabecera).value);//definimos el valor por deafult a mostrar
 }
 
 
