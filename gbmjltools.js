@@ -252,8 +252,9 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
 	app.getSharedData().RemoverItemDropDown = function(myDropDown, myItem) {
 			if (myDropDown.getType()==="comboBox") {
 						var nuevaLista = new Array();//creando nueva lista
-					  for(var j=0; j<myDropDown.length;j++) {
-					      var curItem = get(myDropDown, j);
+						var opciones=myDropDown.getOptions();
+					  for(var j=0; j<opciones.length;j++) {
+					      var curItem = get(opciones, j);
 					      if(get(curItem, 'title') !== myItem) {
 					        nuevaLista.push(curItem);
 					      }
