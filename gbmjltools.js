@@ -94,69 +94,6 @@
 		return optionPosition;
  }
 
-
-
-//app.getSharedData().ValidarPatron(page.F_TxtFamiliaTelefono,"####-####",0);
-//validaOnBlur opcional 0 o 1
- app.getSharedData().ValidarPatron = function(theItem, pattern,validaOnBlur) {
- 	if(!pattern){
- 		var pattern="####-####"; //valor default si no se envia
- 	}
-
-	if(!validaOnBlur){
- 		var validaOnBlur=0;
- 	}
-
-		var valorItem=theItem.getDisplayValue().toString().trim();//el valor digitado en el item
-		var strError='El valor especificado debe coincidir con el formato: ';
-		var longPatron=pattern.length;
-
-	try {
-		var arrayPattern=pattern.split(''); //convertimos pattern a array
-	  var numArray = valorItem.match(/(\d)|(-)/g); //obteniendo numeros y guiones, guardando en arreglo
-	    //var numArrayString=numArray.toString().replace(/,/g,''); //numeros y guines en formato string da error en Forms
-	    //var nuevoNumArray= numArray;
-	 	var valorEnmascarado="";
-
-		for (var i = 0; i <numArray.length; i++) {
-
-			if(valorEnmascarado.length<longPatron){// si no se ha superado la longitud del patron
-
-				if(get(numArray,i)!=="-" && get(arrayPattern,i)!=="-")// si lo que hay en nuevoNumArray[i] es un numero, y en el patron no hay guion
-				{
-					valorEnmascarado+=get(numArray,i); //escribimos el numero
-
-				}else if(get(numArray,i)!=="-" && get(arrayPattern,i)==="-"){
-					valorEnmascarado+="-"+get(numArray,i); //escribimos el guion y el numero
-				}
-
-				if(get(numArray,i)==="-" && get(arrayPattern,i)==="-"){
-					valorEnmascarado+="-"; //esccribimos el guion
-				}
-
-			}
-
-			theItem.setValue(valorEnmascarado);
-			theItem.setDisplayValue(valorEnmascarado);
-		}//end for
-
-	} catch(e) {
-		// statements
-		theItem.setDisplayValue("");
-		theItem.setValue("");
-		//console.log(e);
-	}
-
-		if(validaOnBlur!==0){ //si se va a validar al desenfocar item
-			if(theItem.getValue().length!==longPatron){//si lo escrito no cumple longitud del patron
-				theItem.getBOAttr().setValid(false, strError+pattern);
-			}else {
-				theItem.getBOAttr().setValid(true, "");
-			}
-		}
-}
-
-
 //Ex. app.getSharedData().ListadoDepartamentos(dropDown,"San Miguel");
 app.getSharedData().ListadoDepartamentos = function(dropDownDestino, defaultDepto) {
 	var listaDeptos=["Ahuachapán","Cabañas","Chalatenango","Cuscatlán","Morazán","La Libertad","La Paz","La Unión","San Miguel", "San Salvador","San Vicente","Santa Ana", "Sonsonate", "Usulután"];
@@ -275,48 +212,9 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
 	dropDownDestino.setValue(get(options, defaultCabecera).value);//definimos el valor por deafult a mostrar
 }
 
-
-//Funcion que compara dos fechas para determinar si una es mayor que otra
-//EX.  app.getSharedData().ValidarFechaMayor(Bo.objetoFechaEvaluar,BO.objetoFechaMaxima,mensajeError);
-
-app.getSharedData().ValidarFechaMayor= function(miFecha, fechaMaxima, errorMsg) {
-
-	var fechaEvaluada = miFecha.getValue(); //fecha 1
-	var fechaMax = fechaMaxima.getValue(); //fecha 2
-
-	//convirtiendo a milisegundos
-	var fechaEvaluadaMili = fechaEvaluada.getTime();
-	var fechaMaximaMili = fechaMax.getTime();
-
-	if(fechaEvaluadaMili>fechaMaximaMili){
-		miFecha.setValid(false,errorMsg);
-	}else{
-		miFecha.setValid(true,"");
-	}
-}
-
-
-
-//Habilita un objeto destino en base a un valor del objeto causante
-//Ex.  app.getSharedData().HabilitarItemCausaEfecto(optionObject,"Si",txtObject);
- app.getSharedData().HabilitarItemCausaEfecto=function(itemOrigen, valorCausa, itemDestino) {
-
- 	var valorItemOrigen=itemOrigen.getValue();
-	if(valorItemOrigen===valorCausa){
-		  itemDestino.setActive(true);
-		  itemDestino.setValue("");
-		  itemDestino.setFocus();
-	}else{
-		  itemDestino.setValue("N/A");
-		  itemDestino.setActive(false);
-	}
-
- }
-
 //Validar que un input acepte solo números (enteros/flotantes)
 //app.getSharedData().SoloNumeros(itemInput);
   app.getSharedData().SoloNumeros = function(theItem) {
-
 	  	var valor=theItem.getDisplayValue()||'';
 	  	var patron=/\d+\.?\d{0,2}/; //entero, o float con dos digitos decimales
 	  	var newValor=valor.toString().match(patron);//validando patron
@@ -327,49 +225,41 @@ app.getSharedData().ValidarFechaMayor= function(miFecha, fechaMaxima, errorMsg) 
 	  		theItem.setValue(get(newValor,0));
 	  		theItem.setDisplayValue(get(newValor,0));
 	  	}
-
-  }
-
-  //Validar que un input acepte solo digitos con guiones
-//app.getSharedData().SoloNumGuion(itemInput);
-  app.getSharedData().SoloNumGuion = function(theItem) {
-
-	  	var valor=theItem.getDisplayValue()||"";
-	  	var patron=/\d+\-?/g; // 1 o mas decimales y guiones
-	  	var newValor=valor.toString().match(patron);//validando patron
-	  	var numGuion="";
-	  	if(newValor===null){
-	  		theItem.setValue('');
-	  		theItem.setDisplayValue('');
-	  	}else{
-
-	  		for (var i = 0; i < newValor.length; i++) {
-	  			numGuion+=get(newValor,i);
-	  		}
-	  		theItem.setValue(numGuion);
-	  		theItem.setDisplayValue(numGuion);
-	  		theItem.getBOAttr().setValid(true);
-	  	}
   }
 
 
- //Validar que solo el usuario que creo el registro, pueda editarlo.
- //se compara el valor de app.getCurrentUser() guardado en un campo del formulario con el usuario actual de sesión
- //si el usuario guardado no corresponde con el de la sesión actual, desactivamos la sección.
- //Ex. app.getSharedData().ValidarEditarSeccion(page.F_TxtHiddenCreatorID.getValue(),app.getCurrentUser(),page.F_secDatosPersonales);
-  app.getSharedData().ValidarEditarSeccion = function(savedUser,currentUser,theSection) {
-	//page.F_secDatosPersonales.setActive(false);
-	var creatorUser=savedUser||"x";
-	var sessionUser=currentUser||"y";
-
-	if(theSection.getType() === "section"){  //si el elemnto es una sesccion ( getType es propio de FEB)
-		if(creatorUser!==sessionUser && creatorUser!==""){// si son distintos y  creator no está vacio
-			theSection.setActive(false);
-		}else{
-			theSection.setActive(true);
-		}
-	}else{
-		//console.log("El parametro TheSection no es item de tipo section");//da error en FEB con security javascript
+//Remover espacio en blanco de DropDown
+//Se sugiere usar en evento onLoad, habiendo definido una opcion por default
+//app.getSharedData().RemoverOpcionBlancon(dropDown);
+	app.getSharedData().RemoverOpcionBlanco=function(myDropDown){
+			if (myDropDown.getType()==="comboBox") {
+				var opciones=myDropDown.getOptions();//obtenemos las opciones
+				var nuevaLista= new Array();
+				for (var i = 0; i < opciones.length; i++) {
+						var curItem=get(opciones,i);
+						if(curItem !== "") {
+			          nuevaLista.push(curItem);//insertamos la opcion
+			      }
+				}
+				myDropDown.setOptions(nuevaLista);//asignamos la nueva lista
+			}else{
+				alert("app.getSharedData().RemoverOpcionBlanco solo puede ser aplicada sobre un elemento DropDown List");
+			}
 	}
 
-  }
+//Remover un elemento en particular del DropDown
+//app.getSharedData().RemoverItemDropDown(dropDown,"valor a borrar");
+	app.getSharedData().RemoverItemDropDown = function(myDropDown, myItem) {
+			if (myDropDown.getType()==="comboBox") {
+						var nuevaLista = new Array();//creando nueva lista
+					  for(var j=0; j<myDropDown.length;j++) {
+					      var curItem = get(myDropDown, j);
+					      if(get(curItem, 'title') !== myItem) {
+					        nuevaLista.push(curItem);
+					      }
+					  }
+						myDropDown.setOptions(nuevaLista);
+			}else{
+				alert("app.getSharedData().removerItemDropDown solo puede ser aplicada sobre un elemento DropDown List");
+			}
+	}
