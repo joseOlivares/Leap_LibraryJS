@@ -213,12 +213,20 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
 }
 
 //Validar que un input acepte solo números (enteros/flotantes)
-//app.getSharedData().SoloNumeros(itemInput);
-  app.getSharedData().SoloNumeros = function(theItem) {
+//app.getSharedData().SoloNumeros(itemInput,totDecimales);
+  app.getSharedData().SoloNumeros = function(theItem,totDecimales) {
+			if (!totDecimales || isNaN(totDecimales)) {
+				totDecimales=2; //definiendo 2 decimales por default
+			}
+			//Patron de busqueda original /\d+\.?\d{0,2}/
+			var pat1=/\d+\.?\d{0,/;
+			var pat2=/}/;
+			var regExpresion= new RegExp(pat1.source + totDecimales + pat2.source);
 	  	var valor=theItem.getDisplayValue()||'';
-	  	var patron=/\d+\.?\d{0,2}/; //entero, o float con dos digitos decimales
-	  	var newValor=valor.toString().match(patron);//validando patron
-	  	if(newValor===null){
+	  	var newValor=valor.match(regExpresion);//validando patron
+			debugger;
+
+	  	if(newValor===null){ //si no coincide con patron
 	  		theItem.setValue('');
 	  		theItem.setDisplayValue('');
 	  	}else{
@@ -264,3 +272,78 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
 				alert("app.getSharedData().removerItemDropDown solo puede ser aplicada sobre un elemento DropDown List");
 			}
 	}
+
+	//app.getSharedData().ValidarPatron(page.F_TxtFamiliaTelefono,"####-####",0);
+	//validaOnBlur opcional 0 o 1
+	 app.getSharedData().ValidarPatronNum = function(theItem, pattern,validaOnBlur) {
+		 	if(!pattern){ var pattern="9999-9999";} //valor default si no se envia
+			if(!validaOnBlur){ var validaOnBlur=0;} //valor por default
+
+			var strError='El valor especificado debe coincidir con el formato: ';
+			var valorItem=theItem.getDisplayValue().toString().trim();//el valor digitado en el item
+			var valorSoloNums=app.getSharedData().SoloEnteros(valorItem);//obteniedo solo numeros
+
+			var valorArrayNums=valorSoloNums.split(''); //numeros introducidos
+			var valArrNumLength=valorArrayNums.length;
+			var arrayPattern=pattern.split('');	//Patron convertido a array
+			var numsPattern=pattern.match(/\d/g).length; //Total de solo numeros en patron
+			var arrayPatternLength=arrayPattern.length;//longitud del patron completo
+
+			if (valorItem.length-1>numsPattern-1) {//limitando las entradas
+				theItem.setDisplayValue(valorSoloNums.substring(0,numsPattern));
+				theItem.setValue(valorSoloNums.substring(0,numsPattern));
+				return false;
+			}else {
+				theItem.setDisplayValue(valorSoloNums);
+				theItem.setValue(valorSoloNums);
+			}
+
+			if (valArrNumLength===numsPattern) {
+					var posValorNum=0;
+					var strOutput="";
+					for (var i = 0; i < arrayPatternLength; i++) {
+							var pattValue=get(arrayPattern,i);
+							if (!isNaN(pattValue)) {//si lo que esta en patron es numero
+									if (posValorNum<valArrNumLength) {
+											strOutput+=get(valorArrayNums,posValorNum);//escribimos el numero
+											posValorNum+=1;
+											theItem.setDisplayValue(strOutput);
+											theItem.setValue(strOutput);
+									}
+							}else{
+									strOutput+=pattValue; //escribimos lo que no es numero
+									theItem.setDisplayValue(strOutput);
+									theItem.setValue(strOutput);
+							}
+					}
+			}else{
+				return false;
+			}
+
+			if (valorItem.length>numsPattern) {
+				debugger;
+				theItem.setDisplayValue(valorItem.substring(0,numsPattern-1));
+				theItem.setValue(valorItem.substring(0,numsPattern-1));
+				return false;
+			}
+
+
+			/* if(validaOnBlur!==0){ //si se va a validar al desenfocar item
+				if(theItem.getValue().length!==longPatron){//si lo escrito no cumple longitud del patron
+					theItem.getBOAttr().setValid(false, strError+pattern);
+				}else {
+					theItem.getBOAttr().setValid(true, "");
+				}
+			}*/
+	}
+
+//Función auxiliar que recibe un valor y retorna solo los numeros enteres
+ app.getSharedData().SoloEnteros = function(itemValue) {
+		 var patSoloNum=/\d+/;
+		 var soloNum=itemValue.match(patSoloNum);
+		 if(soloNum===null){ //si no coincide con patron
+			 return '';//''
+		 }else{
+			 return get(soloNum,0);
+		 }
+ }
