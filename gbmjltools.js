@@ -279,9 +279,9 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
 		 	if(!pattern){ var pattern="9999-9999";} //valor default si no se envia
 			if(!validaOnBlur){ var validaOnBlur=0;} //valor por default
 
-			var strError='El valor especificado debe coincidir con el formato: ';
+			const strError='El valor especificado debe coincidir con el formato: ';
 			var valorItem=theItem.getDisplayValue().toString().trim();//el valor digitado en el item
-			var valorSoloNums=app.getSharedData().SoloEnteros(valorItem);//obteniedo solo numeros
+	    var valorSoloNums=valorSoloNums=app.getSharedData().SoloEnteros(valorItem);//obteniedo solo numeros
 
 			var valorArrayNums=valorSoloNums.split(''); //numeros introducidos
 			var valArrNumLength=valorArrayNums.length;
@@ -289,52 +289,52 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
 			var numsPattern=pattern.match(/\d/g).length; //Total de solo numeros en patron
 			var arrayPatternLength=arrayPattern.length;//longitud del patron completo
 
-			if (valorItem.length-1>numsPattern-1) {//limitando las entradas
-				theItem.setDisplayValue(valorSoloNums.substring(0,numsPattern));
-				theItem.setValue(valorSoloNums.substring(0,numsPattern));
-				return false;
-			}else {
-				theItem.setDisplayValue(valorSoloNums);
-				theItem.setValue(valorSoloNums);
-			}
+
+      theItem.setValue(valorSoloNums);
+      theItem.setDisplayValue(valorSoloNums);
 
 			if (valArrNumLength===numsPattern) {
 					var posValorNum=0;
-					var strOutput="";
+					var strOutput='';
 					for (var i = 0; i < arrayPatternLength; i++) {
-							var pattValue=get(arrayPattern,i);
+							let pattValue=get(arrayPattern,i);
 							if (!isNaN(pattValue)) {//si lo que esta en patron es numero
 									if (posValorNum<valArrNumLength) {
 											strOutput+=get(valorArrayNums,posValorNum);//escribimos el numero
 											posValorNum+=1;
-											theItem.setDisplayValue(strOutput);
 											theItem.setValue(strOutput);
+  										theItem.setDisplayValue(strOutput);
 									}
 							}else{
 									strOutput+=pattValue; //escribimos lo que no es numero
-									theItem.setDisplayValue(strOutput);
 									theItem.setValue(strOutput);
+									theItem.setDisplayValue(strOutput);
 							}
 					}
-			}else{
-				return false;
+          return false;
 			}
 
-			if (valorItem.length>numsPattern) {
-				debugger;
-				theItem.setDisplayValue(valorItem.substring(0,numsPattern-1));
-				theItem.setValue(valorItem.substring(0,numsPattern-1));
-				return false;
-			}
+      if (valorItem.length>arrayPatternLength) {
+        theItem.setValue('');
+        theItem.setDisplayValue('');
+        return false;
+      }
+
+      if(valArrNumLength>numsPattern){
+          var valLimited=valorSoloNums.substring(0,numsPattern);
+          debugger;
+          theItem.setValue(valLimited);
+          theItem.setDisplayValue(valLimited);
+      }
 
 
-			/* if(validaOnBlur!==0){ //si se va a validar al desenfocar item
-				if(theItem.getValue().length!==longPatron){//si lo escrito no cumple longitud del patron
-					theItem.getBOAttr().setValid(false, strError+pattern);
-				}else {
-					theItem.getBOAttr().setValid(true, "");
-				}
-			}*/
+			// if(validaOnBlur!==0){ //si se va a validar al desenfocar item
+			// 	if(valorItem.length!==arrayPatternLength){//si lo escrito no cumple longitud del patron
+			// 		theItem.getBOAttr().setValid(false, strError+pattern);
+			// 	}else {
+			// 		theItem.getBOAttr().setValid(true, "");
+			// 	}
+			// }
 	}
 
 //Función auxiliar que recibe un valor y retorna solo los numeros enteres
