@@ -275,7 +275,7 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
 
 	//app.getSharedData().ValidarPatron(page.F_TxtFamiliaTelefono,"####-####",0);
 	//validaOnBlur opcional 0 o 1
-	 app.getSharedData().ValidarPatronNum = function(theItem, pattern,validaOnBlur) {
+	 app.getSharedData().ValidarPatronNum = function(theItem, pattern) {
 		 	if(!pattern){ var pattern="9999-9999";} //valor default si no se envia
 			if(!validaOnBlur){ var validaOnBlur=0;} //valor por default
 
@@ -289,7 +289,7 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
 			var numsPattern=pattern.match(/\d/g).length; //Total de solo numeros en patron
 			var arrayPatternLength=arrayPattern.length;//longitud del patron completo
 
-
+      debugger;
       theItem.setValue(valorSoloNums);
       theItem.setDisplayValue(valorSoloNums);
 
@@ -327,17 +327,10 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
           theItem.setDisplayValue(valLimited);
       }
 
-
-			// if(validaOnBlur!==0){ //si se va a validar al desenfocar item
-			// 	if(valorItem.length!==arrayPatternLength){//si lo escrito no cumple longitud del patron
-			// 		theItem.getBOAttr().setValid(false, strError+pattern);
-			// 	}else {
-			// 		theItem.getBOAttr().setValid(true, "");
-			// 	}
-			// }
 	}
 
 //Función auxiliar que recibe un valor y retorna solo los numeros enteres
+//app.getSharedData().SoloEnteros(itemValue)
  app.getSharedData().SoloEnteros = function(itemValue) {
 		 var patSoloNum=/\d+/;
 		 var soloNum=itemValue.match(patSoloNum);
