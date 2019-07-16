@@ -273,79 +273,78 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
 			}
 	}
 
-	//app.getSharedData().ValidarPatron(page.F_TxtFamiliaTelefono,"####-####",0);
-	//validaOnBlur opcional 0 o 1
-	 app.getSharedData().ValidarPatronNum = function(theItem, pattern) {
-		 	if(!pattern){ var pattern="9999-9999";} //valor default si no se envia
-			if(!validaOnBlur){ var validaOnBlur=0;} //valor por default
+  //app.getSharedData().ValidarPatronNum(page.F_TxtFamiliaTelefono,"9999-9999");
+   app.getSharedData().ValidarPatronNum = function(theItem, pattern) {
+      if(!pattern){ var pattern="9999-9999";} //valor default si no se envia
 
-			const strError='El valor especificado debe coincidir con el formato: ';
-			var valorItem=theItem.getDisplayValue().toString().trim();//el valor digitado en el item
-	    var valorSoloNums=app.getSharedData().SoloEnteros(valorItem);//obteniedo solo numeros
+      var valorItem=theItem.getDisplayValue().toString().trim();//el valor digitado en el item
+      var valorArrayNums= app.getSharedData().ExtraerDigitos2(valorItem);//obteniedo solo numeros (en formato array)
+      var valorSoloNums='';
+      if (valorArrayNums!=='' && valorArrayNums!==null) {
+        valorSoloNums= valorArrayNums.join(''); //obteniendo numeros y colocandolos en una solo cadena
+      }
 
-			var valorArrayNums=valorSoloNums.split(''); //numeros introducidos
-			var valArrNumLength=valorArrayNums.length;
-			var arrayPattern=pattern.split('');	//Patron convertido a array
-			var numsPattern=pattern.match(/\d/g).length; //Total de solo numeros en patron
-			var arrayPatternLength=arrayPattern.length;//longitud del patron completo
+      var valArrNumLength=valorArrayNums.length;
+      var arrayPattern=pattern.split('');	//Patron convertido a array
+      var numsPattern=pattern.match(/\d/g).length; //Total de solo numeros en patron
+      var arrayPatternLength=arrayPattern.length;//longitud del patron completo
 
+      console.log('valorSoloNums: ',valorSoloNums);
+      console.log('valorArrayNums: ',valorArrayNums);
+      //alert("valArrNumLength= "+valArrNumLength+" numsPattern= "+numsPattern);
       debugger;
-      theItem.setValue(valorSoloNums);
-      theItem.setDisplayValue(valorSoloNums);
-
-			if (valArrNumLength===numsPattern) {
-					var posValorNum=0;
-					var strOutput='';
-					for (var i = 0; i < arrayPatternLength; i++) {
-							let pattValue=get(arrayPattern,i);
-							if (!isNaN(pattValue)) {//si lo que esta en patron es numero
-									if (posValorNum<valArrNumLength) {
-											strOutput+=get(valorArrayNums,posValorNum);//escribimos el numero
-											posValorNum+=1;
-											theItem.setValue(strOutput);
-  										theItem.setDisplayValue(strOutput);
-									}
-							}else{
-									strOutput+=pattValue; //escribimos lo que no es numero
-									theItem.setValue(strOutput);
-									theItem.setDisplayValue(strOutput);
-							}
-					}
+      if (valArrNumLength===numsPattern) {
+        //alert("Entro valArrNumLength===numsPattern");
+          var posValorNum=0;
+          var strOutput='';
+          for (var i = 0; i < arrayPatternLength; i++) {
+              let pattValue=get(arrayPattern,i);
+              if (!isNaN(pattValue)) {//si lo que esta en patron es numero
+                  if (posValorNum<valArrNumLength) {
+                      strOutput+=get(valorArrayNums,posValorNum);//escribimos el numero
+                      posValorNum+=1;
+                      theItem.setValue(strOutput);
+                      theItem.setDisplayValue(strOutput);
+                  }
+              }else{
+                  strOutput+=pattValue; //escribimos lo que no es numero
+                  theItem.setValue(strOutput);
+                  theItem.setDisplayValue(strOutput);
+              }
+          }
           return false;
-			}
-
-      if (valorItem.length>arrayPatternLength) {
-        theItem.setValue('');
-        theItem.setDisplayValue('');
+      }else if(valArrNumLength>numsPattern){//asumimos que el patron ya esta completo
+         //alert("valArrNumLength>numsPattern" );
+         var valLimited=valorItem.substring(0,arrayPatternLength);
+         theItem.setValue(valLimited);
+         theItem.setDisplayValue(valLimited);
+        return false;
+      }else {
+        //alert("valArrNumLength<numsPattern" );
+        theItem.setValue(valorSoloNums);
+        theItem.setDisplayValue(valorSoloNums);
         return false;
       }
+  }
 
-      if(valArrNumLength>numsPattern){
-          var valLimited=valorSoloNums.substring(0,numsPattern);
-          debugger;
-          theItem.setValue(valLimited);
-          theItem.setDisplayValue(valLimited);
-      }
-
-	}
-
-//Función auxiliar que recibe un valor y retorna solo los numeros enteres
-//app.getSharedData().SoloEnteros(itemValue)
- app.getSharedData().SoloEnteros = function(itemValue) {
-		 var patSoloNum=/\d+/;
-		 var soloNum=itemValue.match(patSoloNum);
-		 if(soloNum===null){ //si no coincide con patron
-			 return '';//''
-		 }else{
-			 return get(soloNum,0);
-		 }
- }
 
 
  //Función que extrae los digitos de una cadena de texto
- //app.getSharedData().ExtraerDigitos(itemValue)
-  app.getSharedData().ExtraerDigitos = function(itemValue) {
-    var patSoloNum=/\d+/g;
+ //app.getSharedData().ExtraerDigitos(itemValue,returnString)
+  app.getSharedData().ExtraerDigitos = function(itemValue,returnString){
+    if (!returnString)
+       returnString=false;
+
+    var patSoloNum=/\d/g;
     var soloNum=itemValue.match(patSoloNum);
-    return soloNum.join(''); //retorna solo los numeros contenidos en la cadena
+    if (soloNum===null) {//si no hay coincidencias con el patron
+      return '';
+    }
+
+    if (returnString) {
+      return soloNum.join(''); //retorna un string con todos los numeros
+    }else {
+         return soloNum; //retorna array con los numeros encontrados
+    }
+
   }
