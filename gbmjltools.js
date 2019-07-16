@@ -281,7 +281,7 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
 
 			const strError='El valor especificado debe coincidir con el formato: ';
 			var valorItem=theItem.getDisplayValue().toString().trim();//el valor digitado en el item
-	    var valorSoloNums=valorSoloNums=app.getSharedData().SoloEnteros(valorItem);//obteniedo solo numeros
+	    var valorSoloNums=app.getSharedData().SoloEnteros(valorItem);//obteniedo solo numeros
 
 			var valorArrayNums=valorSoloNums.split(''); //numeros introducidos
 			var valArrNumLength=valorArrayNums.length;
@@ -340,3 +340,12 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
 			 return get(soloNum,0);
 		 }
  }
+
+
+ //Función que extrae los digitos de una cadena de texto
+ //app.getSharedData().ExtraerDigitos(itemValue)
+  app.getSharedData().ExtraerDigitos = function(itemValue) {
+    var patSoloNum=/\d+/g;
+    var soloNum=itemValue.match(patSoloNum);
+    return soloNum.join(''); //retorna solo los numeros contenidos en la cadena
+  }
