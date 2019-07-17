@@ -278,7 +278,7 @@ app.getSharedData().MostrarMunicipios = function(depSeleccionado,dropDownDestino
       if(!pattern){ var pattern="9999-9999";} //valor default si no se envia
 
       var valorItem=theItem.getDisplayValue().toString().trim();//el valor digitado en el item
-      var valorArrayNums= app.getSharedData().ExtraerDigitos2(valorItem);//obteniedo solo numeros (en formato array)
+      var valorArrayNums= app.getSharedData().ExtraerDigitos(valorItem);//obteniedo solo numeros (en formato array)
       var valorSoloNums='';
       if (valorArrayNums!=='' && valorArrayNums!==null) {
         valorSoloNums= valorArrayNums.join(''); //obteniendo numeros y colocandolos en una solo cadena
